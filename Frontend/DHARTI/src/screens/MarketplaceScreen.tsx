@@ -35,7 +35,7 @@ type Product = {
 
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
-  const { isRecording, startRecording, stopRecording } = useVoiceFill();
+  const { isListening, isProcessing, toggleVoiceListener } = useVoiceNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -304,6 +304,23 @@ export default function MarketplaceScreen() {
       backgroundColor: '#FF5A5F',
       transform: [{ scale: 1.05 }],
     },
+    voiceButtonProcessing: {
+      backgroundColor: '#FFA500',
+    },
+    processingIndicator: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 8,
+      backgroundColor: '#F0F8FF',
+      marginHorizontal: 16,
+      borderRadius: 8,
+    },
+    processingText: {
+      marginLeft: 8,
+      color: '#4361EE',
+      fontSize: 14,
+    },
     errorText: {
       color: '#FF5A5F',
       fontSize: 16,
@@ -348,17 +365,30 @@ export default function MarketplaceScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>{t('marketplace.title')}</Text>
         <TouchableOpacity 
-          style={[styles.voiceButton, isRecording && styles.voiceButtonActive]}
-          onPress={isRecording ? stopRecording : startRecording}
+          style={[
+            styles.voiceButton, 
+            isListening && styles.voiceButtonActive,
+            isProcessing && styles.voiceButtonProcessing
+          ]}
+          onPress={toggleVoiceListener}
+          disabled={isProcessing}
         >
           <Feather 
-            name="mic" 
+            name={isProcessing ? "clock" : "mic"} 
             size={24} 
             color="#FFFFFF"
           />
         </TouchableOpacity>
       </View>
-
+      
+      {/* Add processing indicator */}
+      {isProcessing && (
+        <View style={styles.processingIndicator}>
+          <ActivityIndicator size="small" color="#4361EE" />
+          <Text style={styles.processingText}>Processing your command...</Text>
+        </View>
+      )}
+      
       <View style={styles.searchBar}>
         <Feather name="search" size={20} color="#4F566B" />
         <TextInput
@@ -584,6 +614,23 @@ const styles = {
   voiceButtonActive: {
     backgroundColor: '#FF5A5F',
     transform: [{ scale: 1.05 }],
+  },
+  voiceButtonProcessing: {
+    backgroundColor: '#FFA500',
+  },
+  processingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    backgroundColor: '#F0F8FF',
+    marginHorizontal: 16,
+    borderRadius: 8,
+  },
+  processingText: {
+    marginLeft: 8,
+    color: '#4361EE',
+    fontSize: 14,
   },
   errorText: {
     color: '#FF5A5F',

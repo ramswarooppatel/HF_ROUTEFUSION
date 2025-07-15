@@ -16,8 +16,9 @@ class LLM_Client:
             "DhartiMCPServer": {
             "command": "python",
             "args": [
+                os.getenv("args", "C:\\Users\\Vishal Davey\\Desktop\\Hackfinity\\Dharti_Mcp_Server\\server_code.py")
                 # "--directory",
-                "C:\\Users\\Vishal Davey\\Desktop\\Hackfinity\\Dharti_Mcp_Server\\server_code.py",
+               
                 # "server_code.py",
             ]
             }

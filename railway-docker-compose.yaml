@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./Backend/Main_Dharthi_Backend
+    ports:
+      - "8080:8000"
+    environment:
+      - DB_ENGINE=django.db.backends.mysql
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DEBUG_MODE=True
+      - SECRET_KEY=${SECRET_KEY}
+    restart: always
+
+  mcp:
+    build:
+      context: ./Dharti_Mcp_Server
+    ports:
+      - "8080:9000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - DJANGO_API=${DJANGO_API}
+      - args=server_code.py
+    depends_on:
+      - backend
+    restart: always

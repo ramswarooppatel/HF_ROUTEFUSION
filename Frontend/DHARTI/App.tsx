@@ -11,6 +11,7 @@ export default function App() {
   const handleLogin = (data: { identifier: string; password: string }) => {
     console.log('Login success:', data);
     // Handle post-login navigation/state here
+    //CRAZYY SHIT
   };
 
   return (

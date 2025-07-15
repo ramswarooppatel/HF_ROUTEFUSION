@@ -10,7 +10,9 @@ router.register(r'catalog-products', views.CatalogProductViewSet)
 router.register(r'transactions', views.TransactionViewSet)
 router.register(r'restock-reminders', views.RestockReminderViewSet)
 router.register(r'ai-logs', views.AILogViewSet)
+# router.register(r'login', views.LoginView.as_view())
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('login/', views.LoginView.as_view(), name='login'),
 ]

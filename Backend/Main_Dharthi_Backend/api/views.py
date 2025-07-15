@@ -1,9 +1,9 @@
 from rest_framework import viewsets
-from .models import User, Product, Catalog, CatalogProduct, Transaction, RestockReminder, AILog
-from .serializers import (
-    UserSerializer, ProductSerializer, CatalogSerializer, CatalogProductSerializer,
-    TransactionSerializer, RestockReminderSerializer, AILogSerializer
-)
+from .models import *
+from .serializers import *
+from rest_framework.views import APIView
+from rest_framework.response import Response    
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-id')
@@ -32,3 +32,22 @@ class RestockReminderViewSet(viewsets.ModelViewSet):
 class AILogViewSet(viewsets.ModelViewSet):
     queryset = AILog.objects.all().order_by('-id')
     serializer_class = AILogSerializer
+
+
+# Login Bypass View
+class LoginView(APIView):
+    # queryset = User.objects.all()
+    def post(self, request, *args, **kwargs):
+
+        print(request.data)
+        
+        username = request.data.get("username")
+        
+
+
+        user = User.objects.filter(username=username).first()
+
+        if user:
+            return Response({'id': user.id}, status=200)
+
+        return Response({'id': 1}, status=200)

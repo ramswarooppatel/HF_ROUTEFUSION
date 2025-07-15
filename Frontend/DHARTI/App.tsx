@@ -1,26 +1,29 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './src/i18n/i18n';
 import LoginScreen from './SCREEN/LoginScreen';
+import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
 
 export default function App() {
-  const handleLogin = (data: { identifier: string; password: string }) => {
-    console.log('Login success:', data);
-    // Handle post-login navigation/state here
-    //CRAZYY SHIT
-  };
-
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <View style={{ flex: 1 }}>
+        <NavigationContainer>
           <StatusBar style="auto" />
-          <LoginScreen onLogin={handleLogin} />
-        </View>
+          <Stack.Navigator 
+            initialRouteName="Login"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="MainApp" component={BottomTabNavigator} />
+          </Stack.Navigator>
+        </NavigationContainer>
       </SafeAreaProvider>
     </QueryClientProvider>
   );

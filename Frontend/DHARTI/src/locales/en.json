@@ -27,5 +27,30 @@
     "navigating_marketplace": "Opening marketplace",
     "navigating_settings": "Opening settings",
     "navigating_add_product": "Opening add product"
+  },
+  "settings": {
+    "title": "Settings",
+    "accessibility": "Accessibility",
+    "appearance": "Appearance",
+    "account": "Account",
+    "voice_feedback": "Voice Feedback",
+    "high_contrast": "High Contrast",
+    "dark_mode": "Dark Mode",
+    "language": "Language",
+    "edit_profile": "Edit Profile",
+    "logout": "Logout",
+    "logout_title": "Logout",
+    "logout_message": "Are you sure you want to logout?",
+    "logout_success": "You have been logged out",
+    "language_changed": "Language changed",
+    "dark_mode_on": "Dark mode enabled",
+    "dark_mode_off": "Dark mode disabled",
+    "high_contrast_on": "High contrast mode enabled",
+    "high_contrast_off": "High contrast mode disabled",
+    "voice_enabled": "Voice feedback enabled"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   }
 }

@@ -7,13 +7,16 @@ import { useVoiceFill } from '../src/hooks/useVoiceFill';
 import { switchLanguage } from '../src/utils/languageUtils'; // Add this import
 import * as Speech from 'expo-speech';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 type LoginForm = {
   identifier: string;
   password: string;
 };
 
-export default function LoginScreen({ onLogin }: { onLogin: (data: LoginForm) => void }) {
+// Modified LoginScreen component definition and navigation setup
+export default function LoginScreen() {
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const { isRecording, startRecording, stopRecording } = useVoiceFill();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -30,7 +33,7 @@ export default function LoginScreen({ onLogin }: { onLogin: (data: LoginForm) =>
     },
     onSuccess: (data) => {
       Speech.speak(t('login.success'));
-      onLogin(data);
+      // navigation.navigate('Home'); // Navigate to Home on success
     }
   });
 
@@ -123,6 +126,13 @@ export default function LoginScreen({ onLogin }: { onLogin: (data: LoginForm) =>
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={[styles.loginButton, { marginTop: 16 }]}
+          onPress={() => navigation.navigate('MainApp')}
+        >
+          <Text style={styles.buttonText}>Go to Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={styles.voiceButton}
           onPress={isRecording ? stopRecording : startRecording}
           accessibilityLabel={t('login.voice_mic_label')}
@@ -193,7 +203,7 @@ const styles = {
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16
+    marginTop: 8  // Adjusted margin for better spacing between buttons
   },
   buttonText: {
     color: '#fff',

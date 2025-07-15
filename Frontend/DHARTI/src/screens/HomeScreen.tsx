@@ -38,7 +38,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Welcome to VocalKart</Text>
+      <Text style={styles.header}>Welcome to VaaniKart</Text>
       
       <View style={styles.buttonContainer}>
         <TouchableOpacity 

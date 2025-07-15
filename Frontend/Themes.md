@@ -8,7 +8,6 @@ This follows **WCAG 2.1 AA+** standards and is structured to be easily used acro
 
 ---
 
-````md
 📁 THEMES.md  
 (2025-07-15 – Central Design Tokens for VoiceCatalog)
 
@@ -195,5 +194,3 @@ theme: {
 Any AI/human dev, designer, or contributor must follow these tokens as law.
 
 Ship consistent. Ship accessible. Ship world-class. 🚀
-
-```

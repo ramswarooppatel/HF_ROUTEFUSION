@@ -1,0 +1,56 @@
+{
+  "login": {
+    "title": "Login",
+    "screen_label": "Login screen",
+    "placeholder_identifier": "Email or phone",
+    "placeholder_password": "Password or OTP",
+    "button": "Login",
+    "button_label": "Submit login",
+    "input_identifier_label": "Email or phone input",
+    "input_password_label": "Password or OTP input",
+    "error_required": "This field is required",
+    "error_invalid_identifier": "Enter a valid email or phone",
+    "error_short_password": "Password/OTP must be at least 4 characters",
+    "error_invalid": "Invalid credentials",
+    "success": "Login successful!",
+    "voice_mic_label": "Voice input mic"
+  },
+  "voice": {
+    "permission_denied": "Microphone permission is required",
+    "listening": "Listening...",
+    "recording_failed": "Failed to start recording",
+    "processing_failed": "Failed to process voice command",
+    "navigation_disabled": "Voice navigation is disabled. Enable it in settings",
+    "command_not_recognized": "Sorry, I didn't understand that command",
+    "navigating_home": "Going to home",
+    "navigating_catalog": "Opening catalog",
+    "navigating_marketplace": "Opening marketplace",
+    "navigating_settings": "Opening settings",
+    "navigating_add_product": "Opening add product"
+  },
+  "settings": {
+    "title": "Settings",
+    "accessibility": "Accessibility",
+    "appearance": "Appearance",
+    "account": "Account",
+    "voice_feedback": "Voice Feedback",
+    "high_contrast": "High Contrast",
+    "dark_mode": "Dark Mode",
+    "language": "Language",
+    "edit_profile": "Edit Profile",
+    "logout": "Logout",
+    "logout_title": "Logout",
+    "logout_message": "Are you sure you want to logout?",
+    "logout_success": "You have been logged out",
+    "language_changed": "Language changed",
+    "dark_mode_on": "Dark mode enabled",
+    "dark_mode_off": "Dark mode disabled",
+    "high_contrast_on": "High contrast mode enabled",
+    "high_contrast_off": "High contrast mode disabled",
+    "voice_enabled": "Voice feedback enabled"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  }
+}

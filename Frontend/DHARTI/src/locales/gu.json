@@ -1,0 +1,18 @@
+{
+  "login": {
+    "title": "લોગિન",
+    "screen_label": "લોગિન સ્ક્રીન",
+    "placeholder_identifier": "ઈમેલ અથવા ફોન",
+    "placeholder_password": "પાસવર્ડ અથવા ઓટીપી",
+    "button": "લોગિન કરો",
+    "button_label": "લોગિન સબમિટ કરો",
+    "input_identifier_label": "ઈમેલ અથવા ફોન ઇનપુટ",
+    "input_password_label": "પાસવર્ડ અથવા ઓટીપી ઇનપુટ",
+    "error_required": "આ ફીલ્ડ જરૂરી છે",
+    "error_invalid_identifier": "માન્ય ઈમેલ અથવા ફોન દાખલ કરો",
+    "error_short_password": "પાસવર્ડ/ઓટીપી ઓછામાં ઓછા 4 અક્ષરનો હોવો જોઈએ",
+    "error_invalid": "અમાન્ય ક્રેડેન્શિયલ્સ",
+    "success": "લોગિન સફળ!",
+    "voice_mic_label": "વૉઇસ ઇનપુટ માઇક"
+  }
+}

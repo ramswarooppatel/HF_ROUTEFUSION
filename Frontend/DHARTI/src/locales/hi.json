@@ -1,0 +1,18 @@
+{
+  "login": {
+    "title": "लॉगिन",
+    "screen_label": "लॉगिन स्क्रीन",
+    "placeholder_identifier": "ईमेल या फोन",
+    "placeholder_password": "पासवर्ड या ओटीपी",
+    "button": "लॉगिन करें",
+    "button_label": "लॉगिन सबमिट करें",
+    "input_identifier_label": "ईमेल या फोन इनपुट",
+    "input_password_label": "पासवर्ड या ओटीपी इनपुट",
+    "error_required": "यह फ़ील्ड आवश्यक है",
+    "error_invalid_identifier": "सही ईमेल या फोन डालें",
+    "error_short_password": "पासवर्ड/ओटीपी कम से कम 4 अक्षर का होना चाहिए",
+    "error_invalid": "गलत क्रेडेंशियल्स",
+    "success": "लॉगिन सफल!",
+    "voice_mic_label": "वॉयस इनपुट माइक"
+  }
+}

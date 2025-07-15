@@ -1,0 +1,198 @@
+import React from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Animated, Platform, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+
+export default function HomeScreen() {
+  const navigation = useNavigation();
+  const { t } = useTranslation();
+
+  const scaleAnim = new Animated.Value(1);
+  
+  const animatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
+
+  const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+
+  const TipCard = ({ icon, title, description }: { icon: string; title: string; description: string }) => (
+    <View style={styles.tipCard}>
+      <Feather name={icon} size={24} color="var(--color-accent)" />
+      <Text style={styles.tipTitle}>{title}</Text>
+      <Text style={styles.tipDescription}>{description}</Text>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Welcome to VaaniKart</Text>
+      
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => navigation.navigate('AddProduct')}
+        >
+          <Feather name="plus-circle" size={24} color="#fff" />
+          <Text style={styles.buttonText}>Add New Product</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => navigation.navigate('Catalog')}
+        >
+          <Feather name="box" size={24} color="#fff" />
+          <Text style={styles.buttonText}>My Catalog</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => navigation.navigate('Marketplace')}
+        >
+          <Feather name="shopping-bag" size={24} color="#fff" />
+          <Text style={styles.buttonText}>Open Marketplace</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.voiceButton}>
+        <Feather name="mic" size={32} color="#fff" />
+        <Text style={styles.voiceText}>Tap to Speak</Text>
+      </TouchableOpacity>
+
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tipsContainer}
+      >
+        <TipCard 
+          icon="voice" 
+          title="Voice Commands" 
+          description="Say 'Add Product' to quickly create listings"
+        />
+        <TipCard 
+          icon="trending-up" 
+          title="Track Sales" 
+          description="Monitor your business growth"
+        />
+        <TipCard 
+          icon="users" 
+          title="Connect" 
+          description="Reach more customers in your area"
+        />
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = {
+  container: {
+    flex: 1,
+    backgroundColor: '#F7F9FC',
+    padding: 20,
+  },
+  header: {
+    fontSize: 32,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    fontWeight: 'bold',
+    color: '#1A1F36',
+    marginBottom: 32,
+    textAlign: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  buttonContainer: {
+    gap: 16,
+    marginHorizontal: 8,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4361EE',
+    padding: 20,
+    borderRadius: 16,
+    gap: 12,
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  voiceButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 32,
+    padding: 28,
+    backgroundColor: '#FF5A5F',
+    borderRadius: 40,
+    alignSelf: 'center',
+    shadowColor: '#FF5A5F',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+    transform: [{ scale: 1.1 }],
+  },
+  voiceText: {
+    color: '#FFFFFF',
+    marginTop: 8,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  tipsContainer: {
+    paddingVertical: 20,
+    gap: 16,
+    marginTop: 16,
+  },
+  tipCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 16,
+    width: Dimensions.get('window').width * 0.75,
+    marginRight: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
+  },
+  tipTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1A1F36',
+    marginVertical: 8,
+  },
+  tipDescription: {
+    color: '#4F566B',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  iconContainer: {
+    backgroundColor: '#F0F3FF',
+    padding: 12,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  }
+};

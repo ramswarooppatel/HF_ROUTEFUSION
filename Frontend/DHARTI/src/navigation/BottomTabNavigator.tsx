@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, Animated, Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import CatalogScreen from '../screens/CatalogScreen';
@@ -11,18 +11,48 @@ const Tab = createBottomTabNavigator();
 
 export default function BottomTabNavigator() {
   const { isListening, toggleVoiceListener } = useVoiceNavigation();
+  
+  // Add scale animation for voice button
+  const scaleAnim = new Animated.Value(1);
+  
+  const animateVoiceButton = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.9,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
 
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: 'var(--color-bg)',
-          borderTopColor: 'var(--color-border)',
-          height: 60,
-          paddingBottom: 8,
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E8ECF4',
+          height: Platform.OS === 'ios' ? 85 : 65,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          elevation: 8,
+          borderTopWidth: 0,
         },
-        tabBarActiveTintColor: 'var(--color-accent)',
-        tabBarInactiveTintColor: 'var(--color-fg)',
+        tabBarActiveTintColor: '#4361EE',
+        tabBarInactiveTintColor: '#4F566B',
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 4,
+          fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+        },
         headerShown: false,
       }}
     >
@@ -30,7 +60,11 @@ export default function BottomTabNavigator() {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color }) => <Feather name="home" size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconContainer : styles.iconContainer}>
+              <Feather name="home" size={24} color={color} />
+            </View>
+          ),
         }}
       />
       <Tab.Screen
@@ -45,25 +79,25 @@ export default function BottomTabNavigator() {
         component={View}
         options={{
           tabBarButton: () => (
-            <TouchableOpacity
-              onPress={toggleVoiceListener}
-              style={{
-                top: -20,
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-                backgroundColor: isListening ? 'var(--color-error)' : 'var(--color-accent)',
-                elevation: 4,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 4,
-              }}
+            <Animated.View
+              style={[
+                styles.voiceButtonContainer,
+                { transform: [{ scale: scaleAnim }] }
+              ]}
             >
-              <Feather name="mic" size={28} color="#fff" />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  animateVoiceButton();
+                  toggleVoiceListener();
+                }}
+                style={[
+                  styles.voiceButton,
+                  isListening && styles.voiceButtonActive
+                ]}
+              >
+                <Feather name="mic" size={28} color="#FFFFFF" />
+              </TouchableOpacity>
+            </Animated.View>
           ),
         }}
       />
@@ -84,3 +118,50 @@ export default function BottomTabNavigator() {
     </Tab.Navigator>
   );
 }
+
+const styles = {
+  iconContainer: {
+    padding: 12,
+    borderRadius: 16,
+    marginBottom: 4,
+  },
+  activeIconContainer: {
+    padding: 12,
+    borderRadius: 16,
+    backgroundColor: '#F0F3FF',
+    marginBottom: 4,
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  voiceButtonContainer: {
+    top: Platform.OS === 'ios' ? -30 : -25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 64,
+    height: 64,
+  },
+  voiceButton: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 32,
+    backgroundColor: '#4361EE',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    transform: [{ scale: 1.1 }],
+  },
+  voiceButtonActive: {
+    backgroundColor: '#FF5A5F',
+    shadowColor: '#FF5A5F',
+    transform: [{ scale: 1.15 }],
+  }
+};

@@ -149,91 +149,129 @@ export default function LoginScreen() {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: 'var(--color-bg)',
-    padding: 16
+    backgroundColor: '#f8f9fa', // Light background for better readability
+    padding: 20
   },
   languageSelector: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginBottom: 24
+    marginBottom: 32,
+    padding: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4
   },
   langButton: {
-    padding: 8,
-    margin: 4,
-    borderRadius: 8,
-    backgroundColor: 'var(--color-muted)'
+    padding: 12,
+    margin: 6,
+    borderRadius: 12,
+    backgroundColor: '#e9ecef',
+    minWidth: 80,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#dee2e6'
   },
   langButtonActive: {
-    backgroundColor: 'var(--color-accent)'
+    backgroundColor: '#4361ee', // Vibrant blue for active state
+    borderColor: '#4361ee'
   },
   langButtonText: {
-    color: 'var(--color-fg)',
-    fontSize: 14
+    color: '#495057',
+    fontSize: 16,
+    fontWeight: '600'
   },
   formContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    color: 'var(--color-fg)',
-    marginBottom: 32,
-    fontWeight: 'bold'
+    color: '#212529',
+    marginBottom: 40,
+    fontWeight: 'bold',
+    textAlign: 'center'
   },
   input: {
     width: '100%',
-    maxWidth: 300,
-    height: 50,
-    backgroundColor: 'var(--color-muted)',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    maxWidth: 340,
+    height: 56,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    marginBottom: 20,
     fontSize: 16,
-    color: 'var(--color-fg)'
+    color: '#212529',
+    borderWidth: 2,
+    borderColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2
   },
   loginButton: {
     width: '100%',
-    maxWidth: 300,
-    height: 50,
-    backgroundColor: 'var(--color-accent)',
-    borderRadius: 8,
+    maxWidth: 340,
+    height: 56,
+    backgroundColor: '#4361ee', // Vibrant blue
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8  // Adjusted margin for better spacing between buttons
+    marginTop: 12,
+    shadowColor: '#4361ee',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold'
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 0.5
   },
   errorText: {
-    color: 'var(--color-error)',
+    color: '#dc3545', // Bootstrap red for errors
     fontSize: 14,
-    marginBottom: 8,
+    marginBottom: 12,
     alignSelf: 'flex-start',
-    paddingLeft: 16
+    paddingLeft: 16,
+    fontWeight: '500'
   },
   voiceButton: {
     position: 'absolute',
-    bottom: 32,
-    right: 32,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'var(--color-accent)',
+    bottom: 40,
+    right: 40,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#4361ee',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4
+    elevation: 8,
+    shadowColor: '#4361ee',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    transform: [{ scale: 1.1 }]
   },
   voiceButtonText: {
-    fontSize: 24
+    fontSize: 28
   }
 };

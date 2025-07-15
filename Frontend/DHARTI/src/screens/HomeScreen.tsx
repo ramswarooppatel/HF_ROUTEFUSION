@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Animated, Platform, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +8,25 @@ import { useTranslation } from 'react-i18next';
 export default function HomeScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+
+  const scaleAnim = new Animated.Value(1);
+  
+  const animatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
+
+  const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
   const TipCard = ({ icon, title, description }: { icon: string; title: string; description: string }) => (
     <View style={styles.tipCard}>
@@ -80,65 +99,100 @@ export default function HomeScreen() {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: 'var(--color-bg)',
-    padding: 16,
+    backgroundColor: '#F7F9FC',
+    padding: 20,
   },
   header: {
-    fontSize: 28,
+    fontSize: 32,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
     fontWeight: 'bold',
-    color: 'var(--color-fg)',
+    color: '#1A1F36',
     marginBottom: 32,
     textAlign: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   buttonContainer: {
     gap: 16,
+    marginHorizontal: 8,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'var(--color-accent)',
-    padding: 16,
-    borderRadius: 12,
+    backgroundColor: '#4361EE',
+    padding: 20,
+    borderRadius: 16,
     gap: 12,
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   voiceButton: {
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 32,
-    padding: 24,
-    backgroundColor: 'var(--color-accent)',
-    borderRadius: 32,
+    padding: 28,
+    backgroundColor: '#FF5A5F',
+    borderRadius: 40,
     alignSelf: 'center',
+    shadowColor: '#FF5A5F',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+    transform: [{ scale: 1.1 }],
   },
   voiceText: {
-    color: '#fff',
+    color: '#FFFFFF',
     marginTop: 8,
     fontSize: 16,
+    fontWeight: '600',
   },
   tipsContainer: {
-    paddingVertical: 16,
+    paddingVertical: 20,
     gap: 16,
+    marginTop: 16,
   },
   tipCard: {
-    backgroundColor: 'var(--color-muted)',
-    padding: 16,
-    borderRadius: 12,
-    width: 200,
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 16,
+    width: Dimensions.get('window').width * 0.75,
     marginRight: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
   },
   tipTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: 'var(--color-fg)',
+    color: '#1A1F36',
     marginVertical: 8,
   },
   tipDescription: {
-    color: 'var(--color-fg)',
-    opacity: 0.8,
+    color: '#4F566B',
+    fontSize: 14,
+    lineHeight: 20,
   },
+  iconContainer: {
+    backgroundColor: '#F0F3FF',
+    padding: 12,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  }
 };

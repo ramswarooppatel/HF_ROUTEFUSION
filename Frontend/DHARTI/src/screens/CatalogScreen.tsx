@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -6,7 +6,10 @@ import {
   TouchableOpacity, 
   Image, 
   ActivityIndicator,
-  TextInput
+  TextInput,
+  Animated,
+  Platform,
+  Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -29,6 +32,17 @@ export default function CatalogScreen() {
   const { isListening, toggleVoiceListener } = useVoiceNavigation();
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Animation setup
+  const fadeAnim = new Animated.Value(0);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   // Fetch products query
   const { data: products, isLoading, isError } = useQuery<Product[]>({
     queryKey: ['products'],
@@ -44,8 +58,21 @@ export default function CatalogScreen() {
     product.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderProduct = ({ item }: { item: Product }) => (
-    <TouchableOpacity style={styles.productCard}>
+  const renderProduct = ({ item, index }: { item: Product; index: number }) => (
+    <Animated.View
+      style={[
+        styles.productCard,
+        {
+          opacity: fadeAnim,
+          transform: [{
+            translateY: fadeAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [50, 0]
+            })
+          }]
+        }
+      ]}
+    >
       <Image
         source={{ uri: item.image_url || 'https://via.placeholder.com/150' }}
         style={styles.productImage}
@@ -65,7 +92,7 @@ export default function CatalogScreen() {
           </Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </Animated.View>
   );
 
   if (isLoading) {
@@ -131,107 +158,154 @@ export default function CatalogScreen() {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: 'var(--color-bg)',
+    backgroundColor: '#F8FAFD',
+    paddingTop: Platform.OS === 'ios' ? 0 : 20,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
     fontWeight: 'bold',
-    color: 'var(--color-fg)',
+    color: '#1A1F36',
+    letterSpacing: 0.5,
   },
   addButton: {
-    backgroundColor: 'var(--color-accent)',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    backgroundColor: '#4361EE',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    backgroundColor: 'var(--color-muted)',
-    borderRadius: 8,
+    padding: 16,
+    marginHorizontal: 20,
+    marginVertical: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    marginLeft: 8,
-    marginRight: 8,
-    color: 'var(--color-fg)',
+    marginLeft: 12,
+    marginRight: 12,
+    color: '#1A1F36',
     fontSize: 16,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   productList: {
-    padding: 16,
+    padding: 20,
   },
   productCard: {
     flexDirection: 'row',
-    backgroundColor: 'var(--color-muted)',
-    borderRadius: 12,
-    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    marginBottom: 20,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
   },
   productImage: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
+    borderRadius: 12,
+    margin: 8,
   },
   productInfo: {
     flex: 1,
-    padding: 12,
+    padding: 16,
+    justifyContent: 'space-between',
   },
   productName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: 'var(--color-fg)',
-    marginBottom: 4,
+    color: '#1A1F36',
+    marginBottom: 6,
+    letterSpacing: 0.3,
   },
   productCategory: {
     fontSize: 14,
-    color: 'var(--color-fg)',
-    opacity: 0.7,
-    marginBottom: 4,
+    color: '#4F566B',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   productPrice: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: 'var(--color-accent)',
-    marginBottom: 4,
+    color: '#4361EE',
+    marginBottom: 8,
   },
   stockContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F7F9FC',
+    padding: 8,
+    borderRadius: 8,
   },
   stockText: {
-    marginLeft: 4,
+    marginLeft: 8,
     fontSize: 14,
-    color: 'var(--color-fg)',
-    opacity: 0.8,
+    color: '#4F566B',
+    fontWeight: '500',
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F8FAFD',
   },
   errorText: {
-    color: 'var(--color-error)',
-    marginBottom: 16,
+    color: '#FF5A5F',
+    fontSize: 16,
+    marginBottom: 20,
+    fontWeight: '500',
   },
   retryButton: {
-    backgroundColor: 'var(--color-accent)',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: '#4361EE',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 12,
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   retryText: {
-    color: '#fff',
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
 };
 

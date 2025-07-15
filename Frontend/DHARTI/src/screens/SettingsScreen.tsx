@@ -153,25 +153,51 @@ export default function SettingsScreen() {
   const renderSettingItem = (item: SettingItem) => (
     <TouchableOpacity
       key={item.id}
-      style={styles.settingItem}
+      style={[
+        styles.settingItem,
+        item.id === 'logout' && styles.logoutItem
+      ]}
       onPress={item.onPress}
       accessibilityLabel={item.title}
       accessibilityRole={item.type === 'toggle' ? 'switch' : 'button'}
     >
       <View style={styles.settingItemLeft}>
-        <Feather name={item.icon} size={22} color="var(--color-fg)" />
-        <Text style={styles.settingItemText}>{item.title}</Text>
+        <View style={styles.iconContainer}>
+          <Feather 
+            name={item.icon} 
+            size={20} 
+            color={item.id === 'logout' ? '#FF5A5F' : '#4361EE'} 
+          />
+        </View>
+        <Text style={[
+          styles.settingItemText,
+          item.id === 'logout' && styles.logoutText
+        ]}>
+          {item.title}
+        </Text>
       </View>
+      
       {item.type === 'toggle' && (
         <Switch
           value={item.value}
           onValueChange={item.onPress}
-          trackColor={{ false: 'var(--color-muted)', true: 'var(--color-accent)' }}
-          thumbColor={Platform.OS === 'ios' ? '#fff' : 'var(--color-fg)'}
+          trackColor={{
+            false: '#E8ECF4',
+            true: '#4361EE'
+          }}
+          thumbColor="#FFFFFF"
+          ios_backgroundColor="#E8ECF4"
         />
       )}
+      
       {item.type === 'button' && (
-        <Feather name="chevron-right" size={22} color="var(--color-fg)" />
+        <View style={styles.chevronIcon}>
+          <Feather 
+            name="chevron-right" 
+            size={20} 
+            color="#4F566B" 
+          />
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -199,36 +225,49 @@ export default function SettingsScreen() {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: 'var(--color-bg)',
+    backgroundColor: '#F8FAFD',
   },
   header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'var(--color-muted)',
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: 'var(--color-fg)',
+    color: '#1A1F36',
+    letterSpacing: 0.5,
   },
   content: {
     flex: 1,
+    paddingTop: 12,
   },
   section: {
     marginTop: 24,
+    marginBottom: 8,
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: 'var(--color-fg-muted)',
-    marginLeft: 16,
-    marginBottom: 8,
+    fontWeight: '700',
+    color: '#4F566B',
+    marginLeft: 20,
+    marginBottom: 12,
     textTransform: 'uppercase',
+    letterSpacing: 1.2,
   },
   sectionContent: {
-    backgroundColor: 'var(--color-muted)',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     marginHorizontal: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   settingItem: {
     flexDirection: 'row',
@@ -236,15 +275,66 @@ const styles = {
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'var(--color-bg)',
+    borderBottomColor: '#F0F3FF',
   },
   settingItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#F0F3FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   settingItemText: {
     fontSize: 16,
-    color: 'var(--color-fg)',
-    marginLeft: 12,
+    color: '#1A1F36',
+    marginLeft: 16,
+    fontWeight: '500',
+    flex: 1,
   },
+  switchContainer: {
+    backgroundColor: '#E8ECF4',
+    padding: 2,
+    borderRadius: 16,
+    width: 52,
+    height: 32,
+  },
+  switchActive: {
+    backgroundColor: '#4361EE',
+  },
+  switchThumb: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  chevronIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#F0F3FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutItem: {
+    borderBottomWidth: 0,
+  },
+  logoutText: {
+    color: '#FF5A5F',
+  }
 };

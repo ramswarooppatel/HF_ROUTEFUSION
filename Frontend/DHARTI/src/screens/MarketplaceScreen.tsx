@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   TextInput,
   RefreshControl,
   ActivityIndicator,
+  Animated,
+  Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -54,8 +56,48 @@ export default function MarketplaceScreen() {
     return matchesSearch && matchesCategory;
   });
 
-  const renderItem = ({ item }: { item: MarketplaceItem }) => (
-    <TouchableOpacity style={styles.itemCard}>
+  // Add fade animation
+  const fadeAnim = new Animated.Value(0);
+  const scaleAnim = new Animated.Value(1);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  const animatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      })
+    ]).start();
+  };
+
+  const renderItem = ({ item, index }: { item: MarketplaceItem; index: number }) => (
+    <Animated.View
+      style={[
+        styles.itemCard,
+        {
+          opacity: fadeAnim,
+          transform: [{
+            translateY: fadeAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [50, 0]
+            })
+          }]
+        }
+      ]}
+    >
       <Image
         source={{ uri: item.image_url }}
         style={styles.itemImage}
@@ -80,30 +122,240 @@ export default function MarketplaceScreen() {
           <Text style={styles.soldOutText}>Sold Out</Text>
         </View>
       )}
-    </TouchableOpacity>
+    </Animated.View>
   );
+
+  const styles = {
+    container: {
+      flex: 1,
+      backgroundColor: '#F8FAFD',
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 20,
+      backgroundColor: '#FFFFFF',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: 'bold',
+      color: '#1A1F36',
+      letterSpacing: 0.5,
+    },
+    searchBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#FFFFFF',
+      margin: 16,
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: '#E8ECF4',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    searchInput: {
+      flex: 1,
+      marginLeft: 12,
+      fontSize: 16,
+      color: '#1A1F36',
+    },
+    categoriesList: {
+      maxHeight: 60,
+      paddingHorizontal: 16,
+      marginBottom: 12,
+    },
+    categoryButton: {
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      marginRight: 12,
+      borderRadius: 24,
+      backgroundColor: '#F0F3FF',
+      borderWidth: 1,
+      borderColor: '#E8ECF4',
+      minWidth: 100,
+      alignItems: 'center',
+    },
+    categoryButtonActive: {
+      backgroundColor: '#4361EE',
+      borderColor: '#4361EE',
+      transform: [{ scale: 1.05 }],
+    },
+    categoryText: {
+      color: '#4F566B',
+      fontSize: 15,
+      fontWeight: '500',
+    },
+    categoryTextActive: {
+      color: '#FFFFFF',
+      fontWeight: '700',
+    },
+    listContainer: {
+      padding: 16,
+    },
+    itemCard: {
+      flexDirection: 'row',
+      backgroundColor: '#FFFFFF',
+      borderRadius: 16,
+      marginBottom: 16,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: '#E8ECF4',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    itemImage: {
+      width: 120,
+      height: 120,
+      borderRadius: 12,
+      margin: 8,
+    },
+    itemInfo: {
+      flex: 1,
+      padding: 16,
+    },
+    itemTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#1A1F36',
+      marginBottom: 8,
+    },
+    itemPrice: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#4361EE',
+      marginBottom: 12,
+    },
+    sellerInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#F7F9FC',
+      padding: 8,
+      borderRadius: 8,
+      marginBottom: 8,
+    },
+    sellerName: {
+      fontSize: 14,
+      color: '#4F566B',
+      fontWeight: '600',
+      marginRight: 8,
+    },
+    ratingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#FFF9E6',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 6,
+    },
+    rating: {
+      marginLeft: 4,
+      fontSize: 14,
+      color: '#B7995C',
+      fontWeight: '600',
+    },
+    locationContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#F0F3FF',
+      padding: 8,
+      borderRadius: 8,
+    },
+    location: {
+      marginLeft: 8,
+      fontSize: 14,
+      color: '#4361EE',
+      fontWeight: '500',
+    },
+    soldOutBadge: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      backgroundColor: '#FF5A5F',
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 8,
+      shadowColor: '#FF5A5F',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    soldOutText: {
+      color: '#FFFFFF',
+      fontSize: 12,
+      fontWeight: '700',
+      letterSpacing: 0.5,
+    },
+    voiceButton: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: '#4361EE',
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#4361EE',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 6,
+    },
+    voiceButtonActive: {
+      backgroundColor: '#FF5A5F',
+      transform: [{ scale: 1.05 }],
+    },
+    errorText: {
+      color: '#FF5A5F',
+      fontSize: 16,
+      fontWeight: '500',
+      textAlign: 'center',
+      marginBottom: 16,
+    },
+    emptyText: {
+      color: '#8792A2',
+      fontSize: 16,
+      fontWeight: '500',
+      textAlign: 'center',
+      marginTop: 32,
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>{t('marketplace.title')}</Text>
-        <TouchableOpacity onPress={isRecording ? stopRecording : startRecording}>
+        <TouchableOpacity 
+          style={[styles.voiceButton, isRecording && styles.voiceButtonActive]}
+          onPress={isRecording ? stopRecording : startRecording}
+        >
           <Feather 
             name="mic" 
             size={24} 
-            color={isRecording ? "var(--color-error)" : "var(--color-fg)"} 
+            color="#FFFFFF"
           />
         </TouchableOpacity>
       </View>
 
       <View style={styles.searchBar}>
-        <Feather name="search" size={20} color="var(--color-fg)" />
+        <Feather name="search" size={20} color="#4F566B" />
         <TextInput
           style={styles.searchInput}
           placeholder={t('marketplace.search_placeholder')}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholderTextColor="var(--color-fg-muted)"
+          placeholderTextColor="#8792A2"
         />
       </View>
 
@@ -133,7 +385,7 @@ export default function MarketplaceScreen() {
 
       {isLoading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="var(--color-accent)" />
+          <ActivityIndicator size="large" color="#4361EE" />
         </View>
       ) : isError ? (
         <View style={styles.centered}>
@@ -152,7 +404,7 @@ export default function MarketplaceScreen() {
             <RefreshControl
               refreshing={isLoading}
               onRefresh={refetch}
-              colors={["var(--color-accent)"]}
+              colors={["#4361EE"]}
             />
           }
           ListEmptyComponent={
@@ -167,151 +419,208 @@ export default function MarketplaceScreen() {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: 'var(--color-bg)',
+    backgroundColor: '#F8FAFD',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: 'var(--color-fg)',
+    color: '#1A1F36',
+    letterSpacing: 0.5,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'var(--color-muted)',
+    backgroundColor: '#FFFFFF',
     margin: 16,
-    padding: 12,
-    borderRadius: 8,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    marginLeft: 8,
-    color: 'var(--color-fg)',
+    marginLeft: 12,
     fontSize: 16,
+    color: '#1A1F36',
   },
   categoriesList: {
-    maxHeight: 50,
+    maxHeight: 60,
     paddingHorizontal: 16,
+    marginBottom: 12,
   },
   categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
-    borderRadius: 16,
-    backgroundColor: 'var(--color-muted)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    marginRight: 12,
+    borderRadius: 24,
+    backgroundColor: '#F0F3FF',
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
+    minWidth: 100,
+    alignItems: 'center',
   },
   categoryButtonActive: {
-    backgroundColor: 'var(--color-accent)',
+    backgroundColor: '#4361EE',
+    borderColor: '#4361EE',
+    transform: [{ scale: 1.05 }],
   },
   categoryText: {
-    color: 'var(--color-fg)',
-    fontSize: 14,
+    color: '#4F566B',
+    fontSize: 15,
+    fontWeight: '500',
   },
   categoryTextActive: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   listContainer: {
     padding: 16,
   },
   itemCard: {
     flexDirection: 'row',
-    backgroundColor: 'var(--color-muted)',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     marginBottom: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#E8ECF4',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
   },
   itemImage: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
+    borderRadius: 12,
+    margin: 8,
   },
   itemInfo: {
     flex: 1,
-    padding: 12,
+    padding: 16,
   },
   itemTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: 'var(--color-fg)',
-    marginBottom: 4,
+    color: '#1A1F36',
+    marginBottom: 8,
   },
   itemPrice: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: 'var(--color-accent)',
-    marginBottom: 8,
+    color: '#4361EE',
+    marginBottom: 12,
   },
   sellerInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    backgroundColor: '#F7F9FC',
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 8,
   },
   sellerName: {
     fontSize: 14,
-    color: 'var(--color-fg)',
+    color: '#4F566B',
+    fontWeight: '600',
     marginRight: 8,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFF9E6',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   rating: {
     marginLeft: 4,
     fontSize: 14,
-    color: 'var(--color-fg)',
+    color: '#B7995C',
+    fontWeight: '600',
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F0F3FF',
+    padding: 8,
+    borderRadius: 8,
   },
   location: {
-    marginLeft: 4,
+    marginLeft: 8,
     fontSize: 14,
-    color: 'var(--color-fg-muted)',
+    color: '#4361EE',
+    fontWeight: '500',
   },
   soldOutBadge: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: 'var(--color-error)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    top: 12,
+    right: 12,
+    backgroundColor: '#FF5A5F',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    shadowColor: '#FF5A5F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   soldOutText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
-  centered: {
-    flex: 1,
+  voiceButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#4361EE',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  voiceButtonActive: {
+    backgroundColor: '#FF5A5F',
+    transform: [{ scale: 1.05 }],
   },
   errorText: {
-    color: 'var(--color-error)',
+    color: '#FF5A5F',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
     marginBottom: 16,
   },
-  retryButton: {
-    backgroundColor: 'var(--color-accent)',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  retryText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
   emptyText: {
+    color: '#8792A2',
+    fontSize: 16,
+    fontWeight: '500',
     textAlign: 'center',
-    color: 'var(--color-fg-muted)',
     marginTop: 32,
-  },
+  }
 };
 
 // Mock data for development

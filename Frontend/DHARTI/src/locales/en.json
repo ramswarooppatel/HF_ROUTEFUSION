@@ -17,8 +17,15 @@
   },
   "voice": {
     "permission_denied": "Microphone permission is required",
-    "recording_started": "Recording started",
-    "recording_stopped": "Recording stopped",
-    "recording_failed": "Recording failed"
+    "listening": "Listening...",
+    "recording_failed": "Failed to start recording",
+    "processing_failed": "Failed to process voice command",
+    "navigation_disabled": "Voice navigation is disabled. Enable it in settings",
+    "command_not_recognized": "Sorry, I didn't understand that command",
+    "navigating_home": "Going to home",
+    "navigating_catalog": "Opening catalog",
+    "navigating_marketplace": "Opening marketplace",
+    "navigating_settings": "Opening settings",
+    "navigating_add_product": "Opening add product"
   }
 }

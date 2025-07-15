@@ -1,13 +1,20 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Animated, Platform, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Animated, Platform, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+
+const API_BASE = 'http://localhost:8000/api';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+
+  const [products, setProducts] = useState([]);
+  const [catalogs, setCatalogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const scaleAnim = new Animated.Value(1);
   
@@ -25,6 +32,24 @@ export default function HomeScreen() {
       })
     ]).start();
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const [productsRes, catalogsRes] = await Promise.all([
+          axios.get(`${API_BASE}/products/`),
+          axios.get(`${API_BASE}/catalogs/`)
+        ]);
+        setProducts(productsRes.data);
+        setCatalogs(catalogsRes.data);
+      } catch (err) {
+        // Handle error (show toast, etc.)
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
   const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -71,13 +96,32 @@ export default function HomeScreen() {
         <Text style={styles.voiceText}>Tap to Speak</Text>
       </TouchableOpacity>
 
+      {loading ? (
+        <ActivityIndicator size="large" color="#4361EE" style={{ marginVertical: 24 }} />
+      ) : (
+        <View style={{ marginVertical: 16 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Your Products: {products.length}</Text>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Your Catalogs: {catalogs.length}</Text>
+          {/* Optionally, show a preview list */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {products.slice(0, 3).map((p: any) => (
+              <View key={p.id} style={{ backgroundColor: '#fff', padding: 12, borderRadius: 12, marginRight: 12, minWidth: 120, elevation: 2 }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{p.name}</Text>
+                <Text style={{ color: '#4F566B', fontSize: 14 }}>{p.category}</Text>
+                <Text style={{ color: '#4361EE', fontWeight: '600' }}>₹{p.price}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.tipsContainer}
       >
         <TipCard 
-          icon="voice" 
+          icon="volume-2" 
           title="Voice Commands" 
           description="Say 'Add Product' to quickly create listings"
         />

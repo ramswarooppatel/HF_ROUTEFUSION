@@ -16,6 +16,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useVoiceNavigation } from '../hooks/useVoiceNavigation';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+
+const API_BASE = 'http://localhost:8000/api';
 
 type Product = {
   id: string;
@@ -29,6 +33,7 @@ type Product = {
 
 export default function CatalogScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { isListening, toggleVoiceListener } = useVoiceNavigation();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -43,13 +48,12 @@ export default function CatalogScreen() {
     }).start();
   }, []);
 
-  // Fetch products query
-  const { data: products, isLoading, isError } = useQuery<Product[]>({
+  // Fetch products from API
+  const { data: products, isLoading, isError, refetch } = useQuery<Product[]>({
     queryKey: ['products'],
     queryFn: async () => {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return mockProducts;
+      const res = await axios.get(`${API_BASE}/products/`);
+      return res.data;
     }
   });
 
@@ -85,7 +89,7 @@ export default function CatalogScreen() {
           <Feather 
             name={item.stock_qty > 0 ? "check-circle" : "alert-circle"} 
             size={16} 
-            color={item.stock_qty > 0 ? "var(--color-success)" : "var(--color-error)"} 
+            color={item.stock_qty > 0 ? "#43B97F" : "#FF5A5F"} 
           />
           <Text style={styles.stockText}>
             {item.stock_qty > 0 ? `${item.stock_qty} in stock` : 'Out of stock'}
@@ -98,7 +102,7 @@ export default function CatalogScreen() {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="var(--color-accent)" />
+        <ActivityIndicator size="large" color="#4361EE" />
       </View>
     );
   }
@@ -107,7 +111,7 @@ export default function CatalogScreen() {
     return (
       <View style={styles.centered}>
         <Text style={styles.errorText}>Failed to load products</Text>
-        <TouchableOpacity style={styles.retryButton}>
+        <TouchableOpacity style={styles.retryButton} onPress={() => refetch()}>
           <Text style={styles.retryText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -120,26 +124,26 @@ export default function CatalogScreen() {
         <Text style={styles.title}>My Catalog</Text>
         <TouchableOpacity 
           style={styles.addButton}
-          onPress={() => navigation.navigate('AddProduct')}
+          onPress={() => navigation.navigate('CreateProduct')}
         >
           <Feather name="plus" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
-        <Feather name="search" size={20} color="var(--color-fg)" />
+        <Feather name="search" size={20} color="#1A1F36" />
         <TextInput
           style={styles.searchInput}
           placeholder="Search products..."
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholderTextColor="var(--color-fg)"
+          placeholderTextColor="#1A1F36"
         />
         <TouchableOpacity onPress={toggleVoiceListener}>
           <Feather 
             name="mic" 
             size={20} 
-            color={isListening ? "var(--color-error)" : "var(--color-fg)"} 
+            color={isListening ? "#FF5A5F" : "#1A1F36"} 
           />
         </TouchableOpacity>
       </View>
@@ -308,26 +312,3 @@ const styles = {
     letterSpacing: 0.5,
   },
 };
-
-// Mock data for development
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Organic Rice',
-    price: 85,
-    description: 'Premium quality organic rice',
-    stock_qty: 150,
-    image_url: 'https://via.placeholder.com/150',
-    category: 'Grains'
-  },
-  {
-    id: '2',
-    name: 'Fresh Tomatoes',
-    price: 40,
-    description: 'Farm fresh tomatoes',
-    stock_qty: 75,
-    image_url: 'https://via.placeholder.com/150',
-    category: 'Vegetables'
-  },
-  // Add more mock products as needed
-];

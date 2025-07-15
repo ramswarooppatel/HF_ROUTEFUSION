@@ -1,0 +1,18 @@
+{
+  "login": {
+    "title": "உள்நுழைவு",
+    "screen_label": "உள்நுழைவு திரை",
+    "placeholder_identifier": "மின்னஞ்சல் அல்லது தொலைபேசி",
+    "placeholder_password": "கடவுச்சொல் அல்லது OTP",
+    "button": "உள்நுழைக",
+    "button_label": "உள்நுழைவை சமர்ப்பிக்கவும்",
+    "input_identifier_label": "மின்னஞ்சல் அல்லது தொலைபேசி உள்ளீடு",
+    "input_password_label": "கடவுச்சொல் அல்லது OTP உள்ளீடு",
+    "error_required": "இந்த புலம் தேவை",
+    "error_invalid_identifier": "சரியான மின்னஞ்சல் அல்லது தொலைபேசி எண்ணை உள்ளிடவும்",
+    "error_short_password": "கடவுச்சொல்/OTP குறைந்தது 4 எழுத்துகள் இருக்க வேண்டும்",
+    "error_invalid": "தவறான சான்றுகள்",
+    "success": "உள்நுழைவு வெற்றி!",
+    "voice_mic_label": "குரல் உள்ளீடு மைக்"
+  }
+}

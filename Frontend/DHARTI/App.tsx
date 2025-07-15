@@ -1,20 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import './src/i18n/i18n';
+import LoginScreen from './SCREEN/LoginScreen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+const queryClient = new QueryClient();
 
 export default function App() {
+  const handleLogin = (data: { identifier: string; password: string }) => {
+    console.log('Login success:', data);
+    // Handle post-login navigation/state here
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app nice work!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <View style={{ flex: 1 }}>
+          <StatusBar style="auto" />
+          <LoginScreen onLogin={handleLogin} />
+        </View>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

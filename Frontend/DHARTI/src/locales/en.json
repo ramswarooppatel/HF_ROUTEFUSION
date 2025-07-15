@@ -1,0 +1,24 @@
+{
+  "login": {
+    "title": "Login",
+    "screen_label": "Login screen",
+    "placeholder_identifier": "Email or phone",
+    "placeholder_password": "Password or OTP",
+    "button": "Login",
+    "button_label": "Submit login",
+    "input_identifier_label": "Email or phone input",
+    "input_password_label": "Password or OTP input",
+    "error_required": "This field is required",
+    "error_invalid_identifier": "Enter a valid email or phone",
+    "error_short_password": "Password/OTP must be at least 4 characters",
+    "error_invalid": "Invalid credentials",
+    "success": "Login successful!",
+    "voice_mic_label": "Voice input mic"
+  },
+  "voice": {
+    "permission_denied": "Microphone permission is required",
+    "recording_started": "Recording started",
+    "recording_stopped": "Recording stopped",
+    "recording_failed": "Recording failed"
+  }
+}

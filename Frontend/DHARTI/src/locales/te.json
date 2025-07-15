@@ -1,0 +1,18 @@
+{
+  "login": {
+    "title": "లాగిన్",
+    "screen_label": "లాగిన్ స్క్రీన్",
+    "placeholder_identifier": "ఇమెయిల్ లేదా ఫోన్",
+    "placeholder_password": "పాస్వర్డ్ లేదా OTP",
+    "button": "లాగిన్",
+    "button_label": "లాగిన్ సమర్పించండి",
+    "input_identifier_label": "ఇమెయిల్ లేదా ఫోన్ ఇన్పుట్",
+    "input_password_label": "పాస్వర్డ్ లేదా OTP ఇన్పుట్",
+    "error_required": "ఈ ఫీల్డ్ అవసరం",
+    "error_invalid_identifier": "చెల్లుబాటు అయ్యే ఇమెయిల్ లేదా ఫోన్ నంబర్ నమోదు చేయండి",
+    "error_short_password": "పాస్వర్డ్/OTP కనీసం 4 అక్షరాలు ఉండాలి",
+    "error_invalid": "చెల్లని ధృవీకరణ వివరాలు",
+    "success": "లాగిన్ విజయవంతం!",
+    "voice_mic_label": "వాయిస్ ఇన్పుట్ మైక్"
+  }
+}

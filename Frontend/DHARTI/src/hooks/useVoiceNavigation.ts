@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useState, useEffect, useCallback } from 'react';
+import { Audio } from 'expo-audio';
 import * as Speech from 'expo-speech';
-import { Audio } from 'expo-av';
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { recognizeSpeech, commandMappings } from '../utils/voiceHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { processVoiceCommand } from '../services/voiceProcessing';
 
 export const useVoiceNavigation = () => {
   const [isListening, setIsListening] = useState(false);
@@ -12,49 +12,63 @@ export const useVoiceNavigation = () => {
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
 
-  const processCommand = async (transcribedText: string) => {
-    const currentLang = i18n.language as keyof typeof commandMappings;
-    const commands = commandMappings[currentLang];
-    const normalizedText = transcribedText.toLowerCase().trim();
-
-    // Check each command category
-    for (const [action, phrases] of Object.entries(commands)) {
-      if (phrases.some(phrase => normalizedText.includes(phrase.toLowerCase()))) {
-        switch (action) {
-          case 'home':
-            navigation.navigate('Home');
-            Speech.speak(t('voice.navigating_home'));
-            return;
-          case 'catalog':
-            navigation.navigate('Catalog');
-            Speech.speak(t('voice.navigating_catalog'));
-            return;
-          case 'marketplace':
-            navigation.navigate('Marketplace');
-            Speech.speak(t('voice.navigating_marketplace'));
-            return;
-          case 'settings':
-            navigation.navigate('Settings');
-            Speech.speak(t('voice.navigating_settings'));
-            return;
-          case 'addProduct':
-            navigation.navigate('AddProduct');
-            Speech.speak(t('voice.navigating_add_product'));
-            return;
-        }
+  const processCommand = useCallback(async (text: string) => {
+    try {
+      const result = await processVoiceCommand(text);
+      
+      if (result.intent?.action === 'create_product') {
+        await handleProductCreation(result.intent);
+      } else if (result.intent?.action === 'navigate') {
+        navigation.navigate(result.intent.parameters.screen);
+        speakWithIndianAccent(
+          `Going to ${result.intent.parameters.screen}`,
+          result.language
+        );
+      } else {
+        speakWithIndianAccent(
+          "I didn't understand that command. Please try again.",
+          'en-IN'
+        );
       }
+    } catch (error) {
+      console.error('Error processing command:', error);
+      Speech.speak(t('voice.processing_failed'));
     }
+  }, [navigation, handleProductCreation]);
 
-    Speech.speak(t('voice.command_not_recognized'));
-  };
+  const speakWithIndianAccent = useCallback((text: string, language: string) => {
+    Speech.speak(text, {
+      language,
+      rate: 0.9,
+      pitch: 1.0,
+      voice: language.startsWith('en') ? 'en-IN' : language
+    });
+  }, []);
 
-  const toggleVoiceListener = async () => {
+  const handleProductCreation = useCallback(async (intent: any) => {
+    const { parameters } = intent;
+    const newProduct = {
+      name: parameters.item,
+      price: parameters.price,
+      quantity: parameters.quantity,
+      unit: parameters.unit
+    };
+    
+    speakWithIndianAccent(
+      `Creating product: ${parameters.quantity} ${parameters.unit} ${parameters.item} for ${parameters.price} rupees`,
+      'en-IN'
+    );
+    
+    navigation.navigate('AddProduct', { prefillData: newProduct });
+  }, [navigation]);
+
+  const toggleVoiceListener = useCallback(async () => {
     if (isListening) {
       await stopListening();
     } else {
       await startListening();
     }
-  };
+  }, [isListening, stopListening, startListening]);
 
   const startListening = async () => {
     try {
@@ -119,7 +133,9 @@ export const useVoiceNavigation = () => {
 
   return {
     isListening,
-    toggleVoiceListener,
-    processCommand
+    startListening,
+    stopListening,
+    processCommand,
+    toggleVoiceListener
   };
 };

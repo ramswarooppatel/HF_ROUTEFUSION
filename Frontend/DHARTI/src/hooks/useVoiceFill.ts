@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Audio } from 'expo-av';
+import { Audio } from 'expo-audio'; // Updated import
 import * as Speech from 'expo-speech';
 import { useTranslation } from 'react-i18next';
 
@@ -19,32 +19,43 @@ export const useVoiceFill = () => {
 
   const startRecording = async () => {
     try {
-      // Request permissions
       const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
         Speech.speak(t('voice.permission_denied'));
         return;
       }
 
-      // Configure audio
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
       });
 
-      // Start recording
       const newRecording = new Audio.Recording();
-      await newRecording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
-      await newRecording.startAsync();
+      await newRecording.prepareToRecordAsync({
+        android: {
+          audioEncoder: Audio.AUDIO_ENCODER_AAC,
+          sampleRate: 44100,
+          numberOfChannels: 1,
+          bitRate: 128000,
+        },
+        ios: {
+          audioQuality: Audio.RECORDING_QUALITY_HIGH,
+          sampleRate: 44100,
+          numberOfChannels: 1,
+          bitRate: 128000,
+          linearPCMBitDepth: 16,
+          linearPCMIsBigEndian: false,
+          linearPCMIsFloat: false,
+        },
+      });
       
+      await newRecording.startAsync();
       setRecording(newRecording);
       setIsRecording(true);
-      Speech.speak(t('voice.recording_started'));
-
+      
     } catch (error) {
       console.error('Failed to start recording:', error);
       Speech.speak(t('voice.recording_failed'));
-      setIsRecording(false);
     }
   };
 

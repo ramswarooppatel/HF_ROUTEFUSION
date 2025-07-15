@@ -7,10 +7,14 @@ class User(AbstractUser):
         ('kirana', 'Kirana'),
         ('artisan', 'Artisan'),
         ('farmer', 'Farmer'),
+        ('user', 'User'),
     ]
     phone = models.CharField(max_length=15, unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.username} ({self.role})"
 
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
@@ -24,6 +28,9 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.name} - {self.user.username}"
+
 class Catalog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='catalogs')
     title = models.CharField(max_length=255)
@@ -31,21 +38,32 @@ class Catalog(models.Model):
     qr_code_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Catalog: {self.title} ({self.user.username})"
+
 class CatalogProduct(models.Model):
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE, related_name='catalog_products')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='catalog_products')
+
+    def __str__(self):
+        return f"{self.catalog.title} - {self.product.name}"
 
 class Transaction(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('completed', 'Completed'),
+        ('failed', 'Failed'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='transactions')
-    payment_link = models.URLField()
+    payment_link = models.URLField(default="http://example.com/payment")
+    reference_no = models.CharField(max_length=100, default=uuid.uuid4, editable=False, unique=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Transaction: {self.user.username} -> {self.product.name} ({self.status})"
 
 class RestockReminder(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='restock_reminders')
@@ -53,6 +71,9 @@ class RestockReminder(models.Model):
     suggested_qty = models.IntegerField()
     season_note = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Restock: {self.product.name} for {self.user.username} ({self.suggested_qty})"
 
 class AILog(models.Model):
     ACTION_CHOICES = [
@@ -65,3 +86,6 @@ class AILog(models.Model):
     input_data = models.JSONField()
     ai_output = models.JSONField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"AILog: {self.user.username} - {self.action_type}"

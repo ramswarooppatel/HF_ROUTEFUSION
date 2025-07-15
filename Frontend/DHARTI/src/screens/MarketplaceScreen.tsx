@@ -9,27 +9,28 @@ import {
   RefreshControl,
   ActivityIndicator,
   Animated,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useVoiceFill } from '../hooks/useVoiceFill';
+import axios from 'axios';
 
-type MarketplaceItem = {
+const API_BASE = 'http://localhost:8000/api';
+
+type Product = {
   id: string;
-  title: string;
+  name: string;
   price: number;
-  seller: {
-    name: string;
-    rating: number;
-    location: string;
-  };
+  user: number;
+  description: string;
+  stock_qty: number;
   image_url: string;
   category: string;
-  available: boolean;
-  distance: number;
+  remarks: string;
 };
 
 export default function MarketplaceScreen() {
@@ -38,20 +39,42 @@ export default function MarketplaceScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const { data, isLoading, isError, refetch } = useQuery<MarketplaceItem[]>({
-    queryKey: ['marketplace-items'],
+  // Fetch products from API
+  const { data, isLoading, isError, refetch } = useQuery<Product[]>({
+    queryKey: ['marketplace-products'],
     queryFn: async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return mockItems;
+      const res = await axios.get(`${API_BASE}/products/`);
+      return res.data;
+    }
+  });
+
+  // Simulate purchase (create transaction)
+  const purchaseMutation = useMutation({
+    mutationFn: async (product: Product) => {
+      // TODO: Replace with actual user id
+      const userId = 1;
+      return axios.post(`${API_BASE}/transactions/`, {
+        user: userId,
+        product: product.id,
+        payment_link: 'https://payment.example.com',
+        reference_no: `TXN${Date.now()}`,
+        amount: product.price,
+        status: 'pending'
+      });
+    },
+    onSuccess: () => {
+      Alert.alert('Success', 'Purchase initiated!');
+    },
+    onError: () => {
+      Alert.alert('Error', 'Failed to purchase');
     }
   });
 
   const categories = ['All', 'Vegetables', 'Fruits', 'Grains', 'Dairy'];
 
   const filteredItems = data?.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.seller.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || selectedCategory === 'All' || 
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || selectedCategory === 'All' ||
       item.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -83,7 +106,7 @@ export default function MarketplaceScreen() {
     ]).start();
   };
 
-  const renderItem = ({ item, index }: { item: MarketplaceItem; index: number }) => (
+  const renderItem = ({ item, index }: { item: Product; index: number }) => (
     <Animated.View
       style={[
         styles.itemCard,
@@ -99,29 +122,27 @@ export default function MarketplaceScreen() {
       ]}
     >
       <Image
-        source={{ uri: item.image_url }}
+        source={{ uri: item.image_url || 'https://via.placeholder.com/150' }}
         style={styles.itemImage}
       />
       <View style={styles.itemInfo}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemPrice}>₹{item.price}</Text>
-        <View style={styles.sellerInfo}>
-          <Text style={styles.sellerName}>{item.seller.name}</Text>
-          <View style={styles.ratingContainer}>
-            <Feather name="star" size={14} color="#FFD700" />
-            <Text style={styles.rating}>{item.seller.rating}</Text>
-          </View>
-        </View>
-        <View style={styles.locationContainer}>
-          <Feather name="map-pin" size={14} color="var(--color-fg)" />
-          <Text style={styles.location}>{item.distance}km away</Text>
-        </View>
+        <Text style={styles.sellerName}>Seller ID: {item.user}</Text>
+        <Text style={styles.itemCategory}>{item.category}</Text>
+        <Text style={styles.stockText}>
+          {item.stock_qty > 0 ? `${item.stock_qty} in stock` : 'Sold Out'}
+        </Text>
+        <TouchableOpacity
+          style={[styles.buyButton, item.stock_qty === 0 && { backgroundColor: '#ccc' }]}
+          disabled={item.stock_qty === 0 || purchaseMutation.isLoading}
+          onPress={() => purchaseMutation.mutate(item)}
+        >
+          <Text style={styles.buyButtonText}>
+            {item.stock_qty === 0 ? 'Sold Out' : 'Buy Now'}
+          </Text>
+        </TouchableOpacity>
       </View>
-      {!item.available && (
-        <View style={styles.soldOutBadge}>
-          <Text style={styles.soldOutText}>Sold Out</Text>
-        </View>
-      )}
     </Animated.View>
   );
 
@@ -136,7 +157,7 @@ export default function MarketplaceScreen() {
       alignItems: 'center',
       padding: 20,
       backgroundColor: '#FFFFFF',
-      shadowColor: '#000',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 8,
@@ -157,7 +178,7 @@ export default function MarketplaceScreen() {
       borderRadius: 12,
       borderWidth: 1,
       borderColor: '#E8ECF4',
-      shadowColor: '#000',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.05,
       shadowRadius: 4,
@@ -210,7 +231,7 @@ export default function MarketplaceScreen() {
       overflow: 'hidden',
       borderWidth: 1,
       borderColor: '#E8ECF4',
-      shadowColor: '#000',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.08,
       shadowRadius: 8,
@@ -238,66 +259,33 @@ export default function MarketplaceScreen() {
       color: '#4361EE',
       marginBottom: 12,
     },
-    sellerInfo: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#F7F9FC',
-      padding: 8,
-      borderRadius: 8,
-      marginBottom: 8,
-    },
     sellerName: {
       fontSize: 14,
       color: '#4F566B',
       fontWeight: '600',
-      marginRight: 8,
+      marginBottom: 4,
     },
-    ratingContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#FFF9E6',
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 6,
-    },
-    rating: {
-      marginLeft: 4,
+    itemCategory: {
       fontSize: 14,
-      color: '#B7995C',
-      fontWeight: '600',
+      color: '#8792A2',
+      marginBottom: 4,
     },
-    locationContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: '#F0F3FF',
-      padding: 8,
-      borderRadius: 8,
-    },
-    location: {
-      marginLeft: 8,
+    stockText: {
       fontSize: 14,
-      color: '#4361EE',
-      fontWeight: '500',
+      color: '#FF5A5F',
+      marginBottom: 8,
     },
-    soldOutBadge: {
-      position: 'absolute',
-      top: 12,
-      right: 12,
-      backgroundColor: '#FF5A5F',
-      paddingHorizontal: 12,
-      paddingVertical: 6,
+    buyButton: {
+      backgroundColor: '#4361EE',
+      padding: 12,
       borderRadius: 8,
-      shadowColor: '#FF5A5F',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      elevation: 3,
+      alignItems: 'center',
+      marginTop: 8,
     },
-    soldOutText: {
-      color: '#FFFFFF',
-      fontSize: 12,
-      fontWeight: '700',
-      letterSpacing: 0.5,
+    buyButtonText: {
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 16,
     },
     voiceButton: {
       width: 48,
@@ -329,7 +317,30 @@ export default function MarketplaceScreen() {
       fontWeight: '500',
       textAlign: 'center',
       marginTop: 32,
-    }
+    },
+    centered: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#F8FAFD',
+    },
+    retryButton: {
+      backgroundColor: '#4361EE',
+      paddingHorizontal: 32,
+      paddingVertical: 16,
+      borderRadius: 12,
+      shadowColor: '#4361EE',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    retryText: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontWeight: 'bold',
+      letterSpacing: 0.5,
+    },
   };
 
   return (
@@ -529,66 +540,33 @@ const styles = {
     color: '#4361EE',
     marginBottom: 12,
   },
-  sellerInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F7F9FC',
-    padding: 8,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
   sellerName: {
     fontSize: 14,
     color: '#4F566B',
     fontWeight: '600',
-    marginRight: 8,
+    marginBottom: 4,
   },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF9E6',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  rating: {
-    marginLeft: 4,
+  itemCategory: {
     fontSize: 14,
-    color: '#B7995C',
-    fontWeight: '600',
+    color: '#8792A2',
+    marginBottom: 4,
   },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0F3FF',
-    padding: 8,
-    borderRadius: 8,
-  },
-  location: {
-    marginLeft: 8,
+  stockText: {
     fontSize: 14,
-    color: '#4361EE',
-    fontWeight: '500',
+    color: '#FF5A5F',
+    marginBottom: 8,
   },
-  soldOutBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: '#FF5A5F',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+  buyButton: {
+    backgroundColor: '#4361EE',
+    padding: 12,
     borderRadius: 8,
-    shadowColor: '#FF5A5F',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    alignItems: 'center',
+    marginTop: 8,
   },
-  soldOutText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+  buyButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   voiceButton: {
     width: 48,
@@ -620,38 +598,28 @@ const styles = {
     fontWeight: '500',
     textAlign: 'center',
     marginTop: 32,
-  }
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFD',
+  },
+  retryButton: {
+    backgroundColor: '#4361EE',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 12,
+    shadowColor: '#4361EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  retryText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
 };
-
-// Mock data for development
-const mockItems: MarketplaceItem[] = [
-  {
-    id: '1',
-    title: 'Fresh Organic Tomatoes',
-    price: 40,
-    seller: {
-      name: 'Raj Farms',
-      rating: 4.5,
-      location: 'Ahmedabad',
-    },
-    image_url: 'https://via.placeholder.com/150',
-    category: 'Vegetables',
-    available: true,
-    distance: 3.2,
-  },
-  {
-    id: '2',
-    title: 'Premium Basmati Rice',
-    price: 120,
-    seller: {
-      name: 'Krishna Grains',
-      rating: 4.8,
-      location: 'Gandhinagar',
-    },
-    image_url: 'https://via.placeholder.com/150',
-    category: 'Grains',
-    available: true,
-    distance: 5.7,
-  },
-  // Add more mock items as needed
-];

@@ -19,6 +19,7 @@
     "expo": "~53.0.17",
     "expo-audio": "^0.4.8",
     "expo-av": "~15.1.7",
+    "expo-file-system": "~18.1.11",
     "expo-linear-gradient": "~14.1.5",
     "expo-linking": "^7.1.7",
     "expo-sharing": "^13.1.5",
@@ -32,11 +33,15 @@
     "react-hook-form": "^7.60.0",
     "react-i18next": "^15.6.0",
     "react-native": "0.79.5",
+    "react-native-audio": "^4.3.0",
+    "react-native-audio-recorder-player": "^4.1.2",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.27.1",
     "react-native-reanimated": "^3.18.0",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-vector-icons": "^10.2.0",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "undefined": "expo-file-system\\"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Audio } from 'expo-audio';
+import { Audio } from 'expo-av';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';

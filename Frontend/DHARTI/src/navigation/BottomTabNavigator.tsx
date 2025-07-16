@@ -6,7 +6,7 @@ import CatalogScreen from '../screens/CatalogScreen';
 import MarketplaceScreen from '../screens/MarketplaceScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { useVoiceNavigation } from '../hooks/useVoiceNavigation';
-
+import { requestPermissionsAsync } from 'expo-av'; // For audio recordingexpo install expo-av
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabNavigator() {

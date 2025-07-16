@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useVoiceFill } from '../hooks/useVoiceFill';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 'http://69.62.81.187:8001/api';
 
 type Product = {
   id: string;
@@ -35,7 +35,7 @@ type Product = {
 
 export default function MarketplaceScreen() {
   const { t } = useTranslation();
-  const { isListening, isProcessing, toggleVoiceListener } = useVoiceNavigation();
+const { isListening, isProcessing, toggleVoiceListener } = useVoiceFill();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -363,7 +363,7 @@ export default function MarketplaceScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('marketplace.title')}</Text>
+        <Text style={styles.title}>{t('MARKETPLACE')}</Text>
         <TouchableOpacity 
           style={[
             styles.voiceButton, 

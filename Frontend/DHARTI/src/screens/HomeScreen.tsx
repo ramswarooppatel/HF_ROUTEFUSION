@@ -5,12 +5,59 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 'http://69.62.81.187:8001/api';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+
+  // Start recording
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const startRecording = async () => {
+    try {
+      const { granted } = await Audio.requestPermissionsAsync();
+      if (!granted) return;
+      await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
+      const rec = new Audio.Recording();
+      console.log('Preparing to record...');
+      await rec.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+      await rec.startAsync();
+      setRecording(rec);
+      setIsRecording(true);
+      console.log('Recording started');
+    } catch (e) { /* handle error */ }
+  };
+
+  const stopRecording = async () => {
+    try {
+      if (!recording) return;
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      setRecording(null);
+      setIsRecording(false);
+      console.log('Recording stopped, file saved at:', uri);
+      
+      // Send file as multipart/form-data
+      const formData = new FormData();
+      formData.append('file', {
+        uri,
+        type: 'audio/x-wav', // or 'audio/wav'
+        name: 'voice.wav',
+      });
+      formData.append('language_code', 'en-IN');
+      console.log('Sending file to server...');
+      const re=await axios.post('http://69.62.81.187:9000/stt', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+        console.log(re);
+
+    } catch (e) { /* handle error */ }
+  };
 
   const [products, setProducts] = useState([]);
   const [catalogs, setCatalogs] = useState([]);
@@ -41,10 +88,11 @@ export default function HomeScreen() {
           axios.get(`${API_BASE}/products/`),
           axios.get(`${API_BASE}/catalogs/`)
         ]);
-        setProducts(productsRes.data);
-        setCatalogs(catalogsRes.data);
+        setProducts(Array.isArray(productsRes.data) ? productsRes.data : []);
+        setCatalogs(Array.isArray(catalogsRes.data) ? catalogsRes.data : []);
       } catch (err) {
-        // Handle error (show toast, etc.)
+        setProducts([]); // fallback to empty array on error
+        setCatalogs([]);
       }
       setLoading(false);
     }
@@ -91,9 +139,14 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.voiceButton}>
-        <Feather name="mic" size={32} color="#fff" />
-        <Text style={styles.voiceText}>Tap to Speak</Text>
+      <TouchableOpacity 
+        style={styles.voiceButton}
+        onPress={isRecording ? stopRecording : startRecording}
+      >
+        <Feather name={isRecording ? "square" : "mic"} size={32} color="#fff" />
+        <Text style={styles.voiceText}>
+          {isRecording ? "Stop Recording" : "Tap to Speak"}
+        </Text>
       </TouchableOpacity>
 
       {loading ? (
@@ -104,7 +157,7 @@ export default function HomeScreen() {
           <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Your Catalogs: {catalogs.length}</Text>
           {/* Optionally, show a preview list */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {products.slice(0, 3).map((p: any) => (
+            {Array.isArray(products) && products.slice(0, 3).map((p: any) => (
               <View key={p.id} style={{ backgroundColor: '#fff', padding: 12, borderRadius: 12, marginRight: 12, minWidth: 120, elevation: 2 }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{p.name}</Text>
                 <Text style={{ color: '#4F566B', fontSize: 14 }}>{p.category}</Text>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Audio } from 'expo-audio'; // Updated import
+import { Audio } from 'expo-av'; // Updated import
 import * as Speech from 'expo-speech';
 import { useTranslation } from 'react-i18next';
 

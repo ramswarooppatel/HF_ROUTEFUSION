@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = FastMCP("DhartiMCPServer")
-DJANGO_API = os.getenv("DJANGO_API", "http://localhost:8000/api")
+DJANGO_API = os.getenv("DJANGO_API", "http://localhost:8001/api")
 @app.tool(description="Create a new product")
 def create_product(data: dict) -> dict:
     response = requests.post(f"{DJANGO_API}/products/", json=data)
